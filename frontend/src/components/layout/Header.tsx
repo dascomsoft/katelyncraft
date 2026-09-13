@@ -75,7 +75,7 @@ export default function Header({ onCartOpen }: HeaderProps) {
                 alt="KATHELYNCRAFT"
                 width={40}
                 height={40}
-                className="h-10 w-auto border- transition-transform duration-300 group-hover:scale-105 md:h-11"
+                className="h-12 w-12  rounded-full border- transition-transform duration-300 group-hover:scale-105 md:h-11"
                 priority
               />
             </div>
