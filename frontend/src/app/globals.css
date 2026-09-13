@@ -1,0 +1,233 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════
+   KATHELYNCRAFT — Design tokens
+   Palette luxe : prune · or · champagne · crème
+═══════════════════════════════════════ */
+@layer base {
+  :root {
+    /* Palette principale */
+    --kc-ink:        42 21 32;    /* #2A1520 · encre prune profonde */
+    --kc-plum:       74 37 64;    /* #4A2540 · prune royal */
+    --kc-plum-light: 107 60 92;   /* #6B3C5C · prune clair */
+    --kc-gold:       184 146 90;  /* #B8925A · or vieilli */
+    --kc-gold-light: 212 184 122; /* #D4B87A · champagne */
+    --kc-cream:      250 246 239; /* #FAF6EF · crème */
+    --kc-ivory:      253 251 247; /* #FDFBF7 · ivoire */
+    --kc-blush:      232 213 208; /* #E8D5D0 · blush poudré */
+    --kc-mauve:      139 123 127; /* #8B7B7F · mauve doux */
+    --kc-mauve-dark: 91 74 80;    /* #5B4A50 · mauve foncé */
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-[#FDFBF7] text-[#2A1520] antialiased;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  }
+
+  /* Titres serif par défaut */
+  h1, h2, h3 {
+    font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  /* Sélection signature dorée */
+  ::selection {
+    background-color: rgb(var(--kc-gold) / 0.25);
+    color: rgb(var(--kc-ink));
+  }
+
+  /* Focus visible élégant */
+  :focus-visible {
+    outline: 2px solid rgb(var(--kc-gold) / 0.6);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Scrollbar discrète (desktop uniquement) */
+  @media (min-width: 768px) {
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgb(var(--kc-cream));
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgb(var(--kc-gold) / 0.4);
+      border-radius: 999px;
+      border: 2px solid rgb(var(--kc-cream));
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgb(var(--kc-gold) / 0.7);
+    }
+  }
+
+  /* Champs de formulaire : reset native + cohérence */
+  input,
+  textarea,
+  select,
+  button {
+    font-family: inherit;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(var(--kc-mauve) / 0.7);
+  }
+
+  /* Images : pas de drag sur les visuels produits */
+  img {
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+}
+
+/* ═══════════════════════════════════════
+   Composants
+═══════════════════════════════════════ */
+@layer components {
+  /* Conteneur principal (conservé, ajusté) */
+  .container {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* ─── Boutons signature ─── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full
+           bg-[#2A1520] px-7 py-3.5 text-sm font-semibold text-[#FAF6EF]
+           transition-all duration-300
+           hover:bg-[#4A2540]
+           hover:shadow-[0_15px_40px_-10px_rgba(74,37,64,0.6)]
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 rounded-full
+           bg-[#D4B87A] px-7 py-3.5 text-sm font-semibold text-[#2A1520]
+           transition-all duration-300
+           hover:bg-[#E8D5D0]
+           hover:shadow-[0_15px_40px_-10px_rgba(212,184,122,0.5)]
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-full
+           border border-[#2A1520]/20 bg-transparent px-7 py-3.5
+           text-sm font-medium text-[#2A1520]
+           transition-all duration-300
+           hover:border-[#B8925A] hover:bg-white/50;
+  }
+
+  /* ─── Carte luxe ─── */
+  .card-lux {
+    @apply relative overflow-hidden rounded-2xl border border-[#B8925A]/15
+           bg-white transition-all duration-500
+           hover:-translate-y-1
+           hover:border-[#B8925A]/40
+           hover:shadow-[0_25px_60px_-25px_rgba(74,37,64,0.3)];
+  }
+
+  /* ─── Eyebrow (petit label majuscules espacé) ─── */
+  .eyebrow {
+    @apply inline-block text-[10px] font-semibold uppercase
+           tracking-[0.3em] text-[#B8925A];
+  }
+
+  /* ─── Séparateur doré ─── */
+  .divider-gold {
+    @apply h-px w-full bg-gradient-to-r
+           from-transparent via-[#B8925A]/40 to-transparent;
+  }
+
+  /* ─── Badge signature ─── */
+  .badge-lux {
+    @apply inline-flex items-center gap-1 rounded-full
+           border border-[#B8925A]/40 bg-[#FDFBF7]/95
+           px-2.5 py-1 text-[9px] font-semibold uppercase
+           tracking-[0.15em] text-[#B8925A] backdrop-blur-sm;
+  }
+
+  /* ─── Motif perles décoratif (arrière-plan) ─── */
+  .pearl-field {
+    background-image:
+      radial-gradient(circle at 20% 30%, rgb(var(--kc-blush) / 0.35) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgb(var(--kc-gold-light) / 0.25) 0%, transparent 45%),
+      radial-gradient(circle at 50% 100%, rgb(var(--kc-plum) / 0.08) 0%, transparent 50%);
+  }
+}
+
+/* ═══════════════════════════════════════
+   Utilitaires
+═══════════════════════════════════════ */
+@layer utilities {
+  .font-serif-display {
+    font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
+  }
+
+  /* Texte dégradé or → champagne */
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #D4B87A 0%, #B8925A 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Fine bordure dorée animée au survol */
+  .gold-underline {
+    position: relative;
+  }
+  .gold-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg, transparent, #D4B87A, transparent);
+    transform: scaleX(0);
+    transition: transform 0.5s ease;
+  }
+  .gold-underline:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* Élévation douce */
+  .shadow-lux {
+    box-shadow: 0 25px 60px -25px rgba(74, 37, 64, 0.3);
+  }
+}
+
+/* ═══════════════════════════════════════
+   AOS — Ajustements (conservé + enrichi)
+═══════════════════════════════════════ */
+[data-aos] {
+  pointer-events: none;
+}
+[data-aos].aos-animate {
+  pointer-events: auto;
+}
+
+/* ═══════════════════════════════════════
+   Accessibilité — mouvement réduit
+═══════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
