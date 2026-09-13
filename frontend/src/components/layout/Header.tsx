@@ -71,17 +71,17 @@ export default function Header({ onCartOpen }: HeaderProps) {
           >
             <div className="relative flex items-center justify-center">
               <Image
-                src="/logo.png"
+                src="/logo-katelyncraft.jpeg"
                 alt="KATHELYNCRAFT"
                 width={40}
                 height={40}
-                className="h-10 w-auto transition-transform duration-300 group-hover:scale-105 md:h-11"
+                className="h-10 w-auto border- transition-transform duration-300 group-hover:scale-105 md:h-11"
                 priority
               />
             </div>
             <div className="hidden flex-col leading-none sm:flex">
               <span className="font-serif text-lg font-semibold tracking-tight text-[#2A1520] md:text-xl">
-                KATHELYN
+                KATELYN
                 <span className="italic text-[#B8925A]">CRAFT</span>
               </span>
               <span className="mt-0.5 text-[9px] font-medium uppercase tracking-[0.28em] text-[#8B7B7F]">
