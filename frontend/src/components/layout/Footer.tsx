@@ -105,7 +105,7 @@ export default function Footer() {
                   <Phone className="h-3 w-3 text-[#D4B87A]" />
                 </div>
                 <span className="leading-relaxed">
-                  {settings?.businessPhone || '+237 600 000 000'}
+                  {settings?.businessPhone || '+237 682214958'}
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -113,7 +113,7 @@ export default function Footer() {
                   <Mail className="h-3 w-3 text-[#D4B87A]" />
                 </div>
                 <span className="break-all leading-relaxed">
-                  {settings?.businessEmail || 'contact@kathelyncraft.com'}
+                  {settings?.businessEmail || 'cathylight51@gmail.com'}
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -158,7 +158,7 @@ export default function Footer() {
             {/* CTA WhatsApp */}
             <a
               href={`https://wa.me/${
-                settings?.whatsappNumber || '237600000000'
+                settings?.whatsappNumber || '237682214958'
               }`}
               target="_blank"
               rel="noopener noreferrer"

@@ -953,7 +953,7 @@ export default function HomePage() {
                   {
                     icon: Phone,
                     label: 'Téléphone / WhatsApp',
-                    value: settings?.businessPhone || '+237 600 000 000',
+                    value: settings?.businessPhone || '+237 682 214 958',
                   },
                   {
                     icon: MapPin,
@@ -964,7 +964,7 @@ export default function HomePage() {
                     icon: Mail,
                     label: 'Email',
                     value:
-                      settings?.businessEmail || 'contact@kathelyncraft.com',
+                      settings?.businessEmail || 'cathylight51@gmail.com',
                   },
                 ].map((item, i) => (
                   <div
@@ -989,7 +989,7 @@ export default function HomePage() {
               <div className="mt-7 flex flex-wrap items-center gap-3 sm:mt-8 sm:gap-4">
                 <Link
                   href={`https://wa.me/${
-                    settings?.whatsappNumber || '237600000000'
+                    settings?.whatsappNumber || '237682214958'
                   }`}
                   target="_blank"
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#D4B87A] px-6 py-3 text-[13px] font-semibold text-[#2A1520] transition-all duration-300 hover:bg-[#E8D5D0] hover:shadow-[0_15px_40px_-10px_rgba(212,184,122,0.5)] sm:w-auto sm:text-sm"

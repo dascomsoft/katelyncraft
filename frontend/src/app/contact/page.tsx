@@ -53,12 +53,12 @@ export default function ContactPage() {
     {
       icon: Phone,
       label: 'Téléphone',
-      value: settings?.businessPhone || '+237 600 000 000',
+      value: settings?.businessPhone || '+237 682214958',
     },
     {
       icon: Mail,
       label: 'Email',
-      value: settings?.businessEmail || 'contact@kathelyncraft.com',
+      value: settings?.businessEmail || 'cathylight51@gmail.com',
     },
     {
       icon: MapPin,
@@ -185,7 +185,7 @@ export default function ContactPage() {
                 {/* CTA WhatsApp */}
                 <a
                   href={`https://wa.me/${
-                    settings?.whatsappNumber || '237600000000'
+                    settings?.whatsappNumber || '237682214958'
                   }`}
                   target="_blank"
                   rel="noopener noreferrer"
