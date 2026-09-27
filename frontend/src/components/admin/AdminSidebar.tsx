@@ -96,20 +96,20 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           ═══════════════════════════════════════ */}
           <div className="hidden border-b border-[#B8925A]/15 px-5 py-6 lg:block">
             <div className="flex items-center gap-3">
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#B8925A]/40 bg-gradient-to-br from-[#FAF6EF] to-[#FDFBF7]">
+              {/* <div className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#B8925A]/40 bg-gradient-to-br from-[#FAF6EF] to-[#FDFBF7]">
                 <Gem className="h-4.5 w-4.5 text-[#B8925A]" />
                 <div className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#2A1520] shadow-sm">
                   <Crown className="h-2.5 w-2.5 text-[#D4B87A]" />
                 </div>
-              </div>
+              </div> */}
               <div className="flex flex-col leading-none">
-                <span className="font-serif text-[15px] font-semibold tracking-tight text-[#2A1520]">
+                {/* <span className="font-serif text-[15px] font-semibold tracking-tight text-[#2A1520]">
                   KATHELYN
                   <span className="italic text-[#B8925A]">CRAFT</span>
                 </span>
                 <span className="mt-0.5 text-[9px] font-medium uppercase tracking-[0.24em] text-[#8B7B7F]">
                   Administration
-                </span>
+                </span> */}
               </div>
             </div>
           </div>

@@ -57,14 +57,14 @@ export default function AdminHeader({ onMenuClick, onLogout }: AdminHeaderProps)
           </button>
 
           {/* Logo Admin */}
-          <Link
+          {/* <Link
             href="/admin"
             aria-label="Tableau de bord administrateur"
             className="group flex items-center gap-3"
           >
             <div className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#B8925A]/40 bg-gradient-to-br from-[#FAF6EF] to-[#FDFBF7] transition-all duration-300 group-hover:shadow-[0_10px_25px_-10px_rgba(184,146,90,0.5)]">
               <Gem className="h-4.5 w-4.5 text-[#B8925A]" />
-              {/* Micro-badge couronne */}
+              Micro-badge couronne
               <div className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#2A1520] shadow-sm">
                 <Crown className="h-2.5 w-2.5 text-[#D4B87A]" />
               </div>
@@ -78,7 +78,7 @@ export default function AdminHeader({ onMenuClick, onLogout }: AdminHeaderProps)
                 Administration
               </span>
             </div>
-          </Link>
+          </Link> */}
         </div>
 
         {/* ═══════════════════════════════════════
@@ -95,6 +95,10 @@ export default function AdminHeader({ onMenuClick, onLogout }: AdminHeaderProps)
             <ExternalLink className="h-3.5 w-3.5" />
             Voir le site
           </Link>
+
+
+
+          
 
           {/* Dropdown utilisateur */}
           <div className="relative">
@@ -162,6 +166,9 @@ export default function AdminHeader({ onMenuClick, onLogout }: AdminHeaderProps)
               </div>
             )}
           </div>
+
+
+
         </div>
       </div>
 
