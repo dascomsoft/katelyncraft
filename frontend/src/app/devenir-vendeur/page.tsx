@@ -96,7 +96,7 @@ export default function DevenirVendeurPage() {
     }
 
     // Construire le message WhatsApp
-    const message = `Bonjour GLA GLA Business, 👋
+    const message = `Bonjour KATELYNCRAFT, 
 
 Je souhaite devenir vendeur sur votre plateforme.
 
@@ -589,7 +589,7 @@ Merci de me recontacter pour la suite. 🙏`
             {/* CTA */}
             <a
               href={`https://wa.me/${
-                settings?.whatsappNumber || '237600000000'
+                settings?.whatsappNumber || '2376 82 21 49 58'
               }?text=${encodeURIComponent(
                 "Bonjour, j'ai une question sur le programme vendeur GLA GLA Business."
               )}`}
