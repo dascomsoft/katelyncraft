@@ -182,6 +182,12 @@ export default function AdminDashboard() {
               📁 Ajouter une catégorie
             </button>
             <button 
+              onClick={() => window.location.href = '/admin/boutiques'}
+              className="w-full text-left px-4 py-2 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-lg transition-colors"
+            >
+              🏪 Gérer les boutiques
+            </button>
+            <button 
               onClick={() => window.location.href = '/admin/orders'}
               className="w-full text-left px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg transition-colors"
             >

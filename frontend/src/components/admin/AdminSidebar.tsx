@@ -8,6 +8,7 @@ import {
   FolderTree,
   ShoppingBag,
   Settings,
+  Store,
   X,
   Gem,
   Crown,
@@ -27,6 +28,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Produits', href: '/admin/products', icon: Package },
     { name: 'Catégories', href: '/admin/categories', icon: FolderTree },
+    { name: 'Boutiques', href: '/admin/boutiques', icon: Store },
     { name: 'Commandes', href: '/admin/orders', icon: ShoppingBag },
     { name: 'Paramètres', href: '/admin/settings', icon: Settings },
   ]

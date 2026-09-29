@@ -196,7 +196,7 @@ export default function ProductsPage() {
             </Link>
             <ChevronRight className="h-3 w-3 flex-shrink-0 text-[#B8925A]/50" />
             <span className="flex-shrink-0 font-semibold text-[#B8925A]">
-              Boutique
+              Produits
             </span>
             {filters.search && (
               <>

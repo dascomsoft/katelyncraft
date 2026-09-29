@@ -39,12 +39,13 @@ export default function Header({ onCartOpen }: HeaderProps) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  /* ═══════════════════════════════════════
+     NAVIGATION — 3 items épurés
+  ═══════════════════════════════════════ */
   const navItems = [
-    { name: 'Accueil', href: '/' },
-    { name: 'Boutique', href: '/products' },
     { name: 'Collections', href: '/categories' },
+    { name: 'Boutiques partenaires', href: '/boutiques' },
     { name: 'La Maison', href: '/about' },
-    { name: 'Contact', href: '/contact' },
   ]
 
   const isActive = (path: string) =>
@@ -75,7 +76,7 @@ export default function Header({ onCartOpen }: HeaderProps) {
                 alt="KATHELYNCRAFT"
                 width={40}
                 height={40}
-                className="h-12 w-12  rounded-full border- transition-transform duration-300 group-hover:scale-105 md:h-11"
+                className="h-12 w-12 rounded-full border border-[#B8925A]/25 object-cover transition-transform duration-300 group-hover:scale-105 md:h-11 md:w-11"
                 priority
               />
             </div>
@@ -102,7 +103,7 @@ export default function Header({ onCartOpen }: HeaderProps) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative px-3.5 py-2 text-[13px] font-medium uppercase tracking-[0.12em] transition-colors duration-300 ${
+                  className={`relative whitespace-nowrap px-3.5 py-2 text-[13px] font-medium uppercase tracking-[0.12em] transition-colors duration-300 ${
                     active
                       ? 'text-[#B8925A]'
                       : 'text-[#5B4A50] hover:text-[#B8925A]'
@@ -120,7 +121,7 @@ export default function Header({ onCartOpen }: HeaderProps) {
             {/* Lien Promotions avec icône */}
             <Link
               href="/promotions"
-              className="group relative ml-2 inline-flex items-center gap-1.5 rounded-full border border-[#B8925A]/30 bg-[#FAF6EF] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#B8925A] transition-all duration-300 hover:border-[#B8925A] hover:bg-[#B8925A] hover:text-white"
+              className="group relative ml-2 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-[#B8925A]/30 bg-[#FAF6EF] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#B8925A] transition-all duration-300 hover:border-[#B8925A] hover:bg-[#B8925A] hover:text-white"
             >
               <Crown className="h-3 w-3" />
               Offres
@@ -193,6 +194,7 @@ export default function Header({ onCartOpen }: HeaderProps) {
                 ...navItems,
                 { name: 'Offres', href: '/promotions' },
                 { name: 'FAQ', href: '/faq' },
+                { name: 'Contact', href: '/contact' },
               ].map((item) => {
                 const active = isActive(item.href)
                 return (

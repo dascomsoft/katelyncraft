@@ -14,7 +14,8 @@ export default function MobileNavigation() {
 
   const navItems = [
     { name: 'Accueil', href: '/', icon: Home },
-    { name: 'Boutique', href: '/products', icon: Gem },
+    { name: 'Produits', href: '/products', icon: Gem },
+    { name: 'Boutiques', href: '/boutiques' },
     { name: 'Collections', href: '/categories', icon: Crown },
     { name: 'Contact', href: '/contact', icon: MessageCircle },
   ]

@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 
 const orderItemSchema = new mongoose.Schema({
@@ -57,16 +56,6 @@ const orderSchema = new mongoose.Schema({
       district: { type: String, trim: true },
       country: { type: String, default: 'Cameroun' }
     }
-  },
-  // ⭐ NOUVEAU : Lien vers la boutique
-  shop: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Shop',
-    default: null
-  },
-  shopWhatsapp: {
-    type: String,
-    default: ''
   },
   items: [orderItemSchema],
   subtotal: {

@@ -51,11 +51,6 @@ const productSchema = new mongoose.Schema({
     ref: 'Category',
     required: [true, 'La catégorie est requise']
   },
-  shop: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Shop',
-    default: null
-  },
   brand: {
     type: String,
     trim: true,

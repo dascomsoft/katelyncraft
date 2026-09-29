@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const Shop = require('../models/Shop');
 const { slugify } = require('../utils/slugify');
 const cloudinaryService = require('../services/cloudinaryService');
 
@@ -9,61 +10,45 @@ const cloudinaryService = require('../services/cloudinaryService');
 const createProduct = async (req, res) => {
   try {
     const {
-      name,
-      description,
-      price,
-      oldPrice,
-      images,
-      category,
-      brand,
-      stock,
-      available,
-      featured,
-      specifications,
-      tags,
-      metaTitle,
-      metaDescription
+      name, description, price, oldPrice, images, category,
+      shop, brand, stock, available, featured, specifications,
+      tags, metaTitle, metaDescription
     } = req.body;
 
-    // Validate required fields
     if (!name || !description || !price || !category || !images || images.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Les champs requis sont manquants (nom, description, prix, catégorie, images)'
+        message: 'Champs requis manquants (nom, description, prix, catégorie, images)'
       });
     }
 
-    // Validate category exists
+    // Vérifier la catégorie
     const categoryExists = await Category.findById(category);
     if (!categoryExists) {
-      return res.status(400).json({
-        success: false,
-        message: 'Catégorie invalide'
-      });
+      return res.status(400).json({ success: false, message: 'Catégorie invalide' });
     }
 
-    // Generate slug
-    const slug = slugify(name);
+    // Vérifier la boutique si fournie
+    if (shop) {
+      const shopExists = await Shop.findById(shop);
+      if (!shopExists) {
+        return res.status(400).json({ success: false, message: 'Boutique invalide' });
+      }
+    }
 
-    // Check if slug exists
+    const slug = slugify(name);
     const existingProduct = await Product.findOne({ slug });
     if (existingProduct) {
-      return res.status(400).json({
-        success: false,
-        message: 'Un produit avec ce nom existe déjà'
-      });
+      return res.status(400).json({ success: false, message: 'Un produit avec ce nom existe déjà' });
     }
 
-    // Create product
     const product = await Product.create({
-      name,
-      slug,
-      description,
+      name, slug, description,
       shortDescription: description.substring(0, 200),
       price: Number(price),
       oldPrice: oldPrice ? Number(oldPrice) : undefined,
-      images,
-      category,
+      images, category,
+      shop: shop || null,
       brand: brand || '',
       stock: Number(stock) || 0,
       available: available === 'true' || available === true,
@@ -74,77 +59,48 @@ const createProduct = async (req, res) => {
       metaDescription: metaDescription || description.substring(0, 160)
     });
 
-    // Update category product count
-    await Category.findByIdAndUpdate(category, {
-      $inc: { productCount: 1 }
-    });
+    // Incrémenter le compteur de produits de la boutique
+    if (shop) {
+      await Shop.findByIdAndUpdate(shop, { $inc: { totalProducts: 1 } });
+    }
 
-    res.status(201).json({
-      success: true,
-      product
-    });
+    await Category.findByIdAndUpdate(category, { $inc: { productCount: 1 } });
+
+    res.status(201).json({ success: true, product });
 
   } catch (error) {
     console.error('Create product error:', error);
     if (error.name === 'ValidationError') {
       const errors = Object.values(error.errors).map(e => e.message);
-      return res.status(400).json({
-        success: false,
-        message: errors[0]
-      });
+      return res.status(400).json({ success: false, message: errors[0] });
     }
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors de la création du produit'
-    });
+    res.status(500).json({ success: false, message: 'Erreur lors de la création: ' + error.message });
   }
 };
 
-// @desc    Get all products with pagination and filters
+// @desc    Get all products
 // @route   GET /api/products
 // @access  Public
 const getProducts = async (req, res) => {
   try {
     const {
-      page = 1,
-      limit = 20,
-      search,
-      category,
-      brand,
-      minPrice,
-      maxPrice,
-      available,
-      featured,
-      sort = '-createdAt',
-      tags
+      page = 1, limit = 20, search, category, shop, brand,
+      minPrice, maxPrice, available, featured, sort = '-createdAt', tags
     } = req.query;
 
-    // Build filter
     const filter = {};
 
-    // Search
-    if (search) {
-      filter.$text = { $search: search };
-    }
+    if (search) filter.$text = { $search: search };
+    if (category) filter.category = category;
+    if (shop) filter.shop = shop; // ⭐ FILTRE PAR BOUTIQUE
+    if (brand) filter.brand = { $regex: brand, $options: 'i' };
 
-    // Category filter
-    if (category) {
-      filter.category = category;
-    }
-
-    // Brand filter
-    if (brand) {
-      filter.brand = { $regex: brand, $options: 'i' };
-    }
-
-    // Price range
     if (minPrice || maxPrice) {
       filter.price = {};
       if (minPrice) filter.price.$gte = Number(minPrice);
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
 
-    // Availability
     if (available === 'true') {
       filter.available = true;
       filter.stock = { $gt: 0 };
@@ -152,67 +108,41 @@ const getProducts = async (req, res) => {
       filter.available = false;
     }
 
-    // Featured
-    if (featured === 'true') {
-      filter.featured = true;
-    }
+    if (featured === 'true') filter.featured = true;
+    if (tags) filter.tags = { $in: tags.split(',') };
 
-    // Tags
-    if (tags) {
-      filter.tags = { $in: tags.split(',') };
-    }
-
-    // Pagination
     const skip = (Number(page) - 1) * Number(limit);
     const limitNum = Math.min(Number(limit), 100);
 
-    // Build sort
     const sortOptions = {};
     if (sort === 'price') sortOptions.price = 1;
     else if (sort === '-price') sortOptions.price = -1;
     else if (sort === 'name') sortOptions.name = 1;
-    else if (sort === '-name') sortOptions.name = -1;
     else if (sort === '-views') sortOptions.views = -1;
     else sortOptions.createdAt = -1;
 
-    // Execute query
     const products = await Product.find(filter)
       .populate('category', 'name slug')
+      .populate('shop', 'name slug')
       .sort(sortOptions)
       .limit(limitNum)
       .skip(skip)
       .lean();
 
     const total = await Product.countDocuments(filter);
-
-    // Get product counts by category for filters
-    const categories = await Category.find({ active: true })
-      .select('name slug _id');
-
-    // Get brands for filters
+    const categories = await Category.find({ active: true }).select('name slug _id');
     const brands = await Product.distinct('brand', { brand: { $ne: '' } });
 
     res.json({
       success: true,
       products,
-      pagination: {
-        page: Number(page),
-        limit: limitNum,
-        total,
-        pages: Math.ceil(total / limitNum)
-      },
-      filters: {
-        categories,
-        brands: brands.sort()
-      }
+      pagination: { page: Number(page), limit: limitNum, total, pages: Math.ceil(total / limitNum) },
+      filters: { categories, brands: brands.sort() }
     });
 
   } catch (error) {
     console.error('Get products error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors du chargement des produits'
-    });
+    res.status(500).json({ success: false, message: 'Erreur lors du chargement des produits' });
   }
 };
 
@@ -222,46 +152,24 @@ const getProducts = async (req, res) => {
 const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
-      .populate('category', 'name slug');
+      .populate('category', 'name slug')
+      .populate('shop', 'name slug whatsappNumber');
 
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Produit non trouvé'
-      });
-    }
+    if (!product) return res.status(404).json({ success: false, message: 'Produit non trouvé' });
 
-    // Increment views
     await Product.findByIdAndUpdate(product._id, { $inc: { views: 1 } });
 
-    // Get related products
     const relatedProducts = await Product.find({
       category: product.category._id,
       _id: { $ne: product._id },
       available: true,
       stock: { $gt: 0 }
-    })
-    .limit(4)
-    .lean();
+    }).limit(4).lean();
 
-    res.json({
-      success: true,
-      product,
-      relatedProducts
-    });
-
+    res.json({ success: true, product, relatedProducts });
   } catch (error) {
     console.error('Get product error:', error);
-    if (error.kind === 'ObjectId') {
-      return res.status(404).json({
-        success: false,
-        message: 'Produit non trouvé'
-      });
-    }
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors du chargement du produit'
-    });
+    res.status(500).json({ success: false, message: 'Erreur' });
   }
 };
 
@@ -271,40 +179,24 @@ const getProductById = async (req, res) => {
 const getProductBySlug = async (req, res) => {
   try {
     const product = await Product.findOne({ slug: req.params.slug })
-      .populate('category', 'name slug');
+      .populate('category', 'name slug')
+      .populate('shop', 'name slug whatsappNumber');
 
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Produit non trouvé'
-      });
-    }
+    if (!product) return res.status(404).json({ success: false, message: 'Produit non trouvé' });
 
-    // Increment views
     await Product.findByIdAndUpdate(product._id, { $inc: { views: 1 } });
 
-    // Get related products
     const relatedProducts = await Product.find({
       category: product.category._id,
       _id: { $ne: product._id },
       available: true,
       stock: { $gt: 0 }
-    })
-    .limit(4)
-    .lean();
+    }).limit(4).lean();
 
-    res.json({
-      success: true,
-      product,
-      relatedProducts
-    });
-
+    res.json({ success: true, product, relatedProducts });
   } catch (error) {
     console.error('Get product by slug error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors du chargement du produit'
-    });
+    res.status(500).json({ success: false, message: 'Erreur' });
   }
 };
 
@@ -313,69 +205,34 @@ const getProductBySlug = async (req, res) => {
 // @access  Private
 const updateProduct = async (req, res) => {
   try {
-    const { id } = req.params;
-    const updates = req.body;
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ success: false, message: 'Produit non trouvé' });
 
-    const product = await Product.findById(id);
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Produit non trouvé'
-      });
-    }
+    const updates = { ...req.body };
 
-    // Check if category is being changed
-    if (updates.category && updates.category !== product.category.toString()) {
-      const categoryExists = await Category.findById(updates.category);
-      if (!categoryExists) {
-        return res.status(400).json({
-          success: false,
-          message: 'Catégorie invalide'
-        });
+    // Si la boutique change
+    if (updates.shop && updates.shop !== product.shop?.toString()) {
+      // Décrémenter l'ancienne boutique
+      if (product.shop) {
+        await Shop.findByIdAndUpdate(product.shop, { $inc: { totalProducts: -1 } });
       }
-      // Update category counts
-      await Category.findByIdAndUpdate(product.category, { $inc: { productCount: -1 } });
-      await Category.findByIdAndUpdate(updates.category, { $inc: { productCount: 1 } });
+      // Incrémenter la nouvelle
+      await Shop.findByIdAndUpdate(updates.shop, { $inc: { totalProducts: 1 } });
     }
 
-    // Check if name is being changed
+    // Si le nom change, régénérer le slug
     if (updates.name && updates.name !== product.name) {
-      const slug = slugify(updates.name);
-      const existing = await Product.findOne({ slug, _id: { $ne: id } });
-      if (existing) {
-        return res.status(400).json({
-          success: false,
-          message: 'Un produit avec ce nom existe déjà'
-        });
-      }
-      updates.slug = slug;
+      updates.slug = slugify(updates.name);
     }
 
-    // Update product
     const updatedProduct = await Product.findByIdAndUpdate(
-      id,
-      updates,
-      { new: true, runValidators: true }
-    ).populate('category', 'name slug');
+      req.params.id, updates, { new: true, runValidators: true }
+    ).populate('category', 'name slug').populate('shop', 'name slug');
 
-    res.json({
-      success: true,
-      product: updatedProduct
-    });
-
+    res.json({ success: true, product: updatedProduct });
   } catch (error) {
     console.error('Update product error:', error);
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(e => e.message);
-      return res.status(400).json({
-        success: false,
-        message: errors[0]
-      });
-    }
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors de la modification du produit'
-    });
+    res.status(500).json({ success: false, message: 'Erreur lors de la modification' });
   }
 };
 
@@ -385,37 +242,23 @@ const updateProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ success: false, message: 'Produit non trouvé' });
 
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Produit non trouvé'
-      });
-    }
-
-    // Delete images from Cloudinary
     if (product.images && product.images.length > 0) {
       await cloudinaryService.deleteImages(product.images);
     }
 
-    // Update category product count
-    await Category.findByIdAndUpdate(product.category, {
-      $inc: { productCount: -1 }
-    });
+    if (product.shop) {
+      await Shop.findByIdAndUpdate(product.shop, { $inc: { totalProducts: -1 } });
+    }
 
+    await Category.findByIdAndUpdate(product.category, { $inc: { productCount: -1 } });
     await product.deleteOne();
 
-    res.json({
-      success: true,
-      message: 'Produit supprimé avec succès'
-    });
-
+    res.json({ success: true, message: 'Produit supprimé' });
   } catch (error) {
     console.error('Delete product error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors de la suppression du produit'
-    });
+    res.status(500).json({ success: false, message: 'Erreur lors de la suppression' });
   }
 };
 
@@ -425,84 +268,44 @@ const deleteProduct = async (req, res) => {
 const toggleProductAvailability = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Produit non trouvé'
-      });
-    }
+    if (!product) return res.status(404).json({ success: false, message: 'Produit non trouvé' });
 
     product.available = !product.available;
     await product.save();
 
-    res.json({
-      success: true,
-      available: product.available,
-      message: `Produit ${product.available ? 'disponible' : 'indisponible'}`
-    });
-
+    res.json({ success: true, available: product.available });
   } catch (error) {
-    console.error('Toggle product error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors du changement de disponibilité'
-    });
+    console.error('Toggle error:', error);
+    res.status(500).json({ success: false, message: 'Erreur' });
   }
 };
 
 // @desc    Get featured products
-// @route   GET /api/products/featured
-// @access  Public
 const getFeaturedProducts = async (req, res) => {
   try {
     const limit = Number(req.query.limit) || 8;
-    const products = await Product.getFeatured(limit);
-
-    res.json({
-      success: true,
-      products
-    });
-
+    const products = await Product.find({ featured: true, available: true, stock: { $gt: 0 } })
+      .sort({ views: -1 }).limit(limit).populate('category', 'name slug').populate('shop', 'name slug');
+    res.json({ success: true, products });
   } catch (error) {
-    console.error('Get featured products error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors du chargement des produits vedettes'
-    });
+    res.status(500).json({ success: false, message: 'Erreur' });
   }
 };
 
 // @desc    Get new arrivals
-// @route   GET /api/products/new-arrivals
-// @access  Public
 const getNewArrivals = async (req, res) => {
   try {
     const limit = Number(req.query.limit) || 8;
-    const products = await Product.getNewArrivals(limit);
-
-    res.json({
-      success: true,
-      products
-    });
-
+    const products = await Product.find({ available: true, stock: { $gt: 0 } })
+      .sort({ createdAt: -1 }).limit(limit).populate('category', 'name slug').populate('shop', 'name slug');
+    res.json({ success: true, products });
   } catch (error) {
-    console.error('Get new arrivals error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors du chargement des nouveautés'
-    });
+    res.status(500).json({ success: false, message: 'Erreur' });
   }
 };
 
 module.exports = {
-  createProduct,
-  getProducts,
-  getProductById,
-  getProductBySlug,
-  updateProduct,
-  deleteProduct,
-  toggleProductAvailability,
-  getFeaturedProducts,
-  getNewArrivals
+  createProduct, getProducts, getProductById, getProductBySlug,
+  updateProduct, deleteProduct, toggleProductAvailability,
+  getFeaturedProducts, getNewArrivals
 };

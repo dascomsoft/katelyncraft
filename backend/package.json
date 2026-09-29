@@ -9,7 +9,9 @@
     "seed": "node src/seed/seed.js",
     "seed:dev": "node -r dotenv/config src/seed/seed.js dotenv_config_path=.env.local",
     "seed:custom": "node src/seed/custom-seed.js",
-    "build": "echo 'No build step required'"
+    "build": "echo 'No build step required'",
+    "seed:boutiques": "node src/seed/seed-boutiques.js",
+    "seed:boutiques:dev": "node -r dotenv/config src/seed/seed-boutiques.js dotenv_config_path=.env.local"
   },
   "keywords": [
     "ecommerce",
